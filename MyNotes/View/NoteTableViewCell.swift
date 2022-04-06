@@ -26,9 +26,9 @@ class NoteTableViewCell: UITableViewCell {
                                 4: "CustomSkin"]
     
     func configureCell() {
+        
         descriptionLabel.text = note.text
-        //dateLabel.text = DateFormatter().string(from: note.date)
-        dateLabel.text = "April 5, 2022"
+        dateLabel.text = getFormattedDate(date: note.date)
         
         noteView.layer.cornerRadius = 8.0
         noteView.layer.masksToBounds = true
@@ -38,7 +38,12 @@ class NoteTableViewCell: UITableViewCell {
         if let colorName = backgroundColorNames[Int.random(in: 0...4)] {
             noteView.backgroundColor = UIColor(named: colorName)
         }
-        
+    }
+
+    func getFormattedDate(date: Date) -> String {
+        let dateformat = DateFormatter()
+        dateformat.dateFormat = "MMMM d, yyyy"
+        return dateformat.string(from: date)
     }
 
 }

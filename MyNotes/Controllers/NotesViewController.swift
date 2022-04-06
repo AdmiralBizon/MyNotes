@@ -71,3 +71,17 @@ class NotesViewController: UITableViewController {
     
     
 }
+
+// MARK: - UISearchBarDeledate
+
+extension NotesViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print(1)
+        
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        print(2)
+    }
+}

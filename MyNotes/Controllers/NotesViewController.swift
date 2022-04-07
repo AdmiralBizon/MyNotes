@@ -16,6 +16,7 @@ class NotesViewController: UITableViewController {
     
     var notes = [Note]()
     var selectedNoteIndex = 0
+    var lastCellColorIndex = -1
     
     private let searchController = UISearchController()
     
@@ -72,8 +73,17 @@ class NotesViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+       
+        if lastCellColorIndex == 4 {
+            lastCellColorIndex = 0
+        } else {
+            lastCellColorIndex += 1
+        }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell", for: indexPath) as! NoteTableViewCell
+        cell.backgroundColorIndex = lastCellColorIndex
         cell.note = notes[indexPath.row]
+        
         return cell
     }
     
@@ -143,6 +153,7 @@ extension NotesViewController: UISearchControllerDelegate, UISearchBarDelegate {
 // MARK: - NotesUpdateDelegate
 
 extension NotesViewController: NotesUpdateDelegate {
+    
     func refreshNotes() {
         fetchNotes()
         tableView.reloadData()

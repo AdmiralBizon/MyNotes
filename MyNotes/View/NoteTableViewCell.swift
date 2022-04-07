@@ -19,6 +19,8 @@ class NoteTableViewCell: UITableViewCell {
         }
     }
     
+    var backgroundColorIndex = 0
+    
     let backgroundColorNames = [0: "CustomBlue",
                                 1: "CustomGreen",
                                 2: "CustomOrange",
@@ -35,17 +37,22 @@ class NoteTableViewCell: UITableViewCell {
         noteView.layer.cornerRadius = 8.0
         noteView.layer.masksToBounds = true
         
-        // Try to get custom color from assets
-        
-        if let colorName = backgroundColorNames[Int.random(in: 0...4)] {
+        if let colorName = backgroundColorNames[backgroundColorIndex] {
             noteView.backgroundColor = UIColor(named: colorName)
         }
     }
 
     func getFormattedDate(date: Date) -> String {
-        let dateformat = DateFormatter()
-        dateformat.dateFormat = "MMMM d, yyyy"
-        return dateformat.string(from: date)
+        let dateformatter = DateFormatter()
+        dateformatter.dateFormat = "MM-dd-yyyy"
+        
+        if dateformatter.string(from: date) == dateformatter.string(from: Date()) {
+            dateformatter.dateFormat = "HH:mm"
+        } else {
+            dateformatter.dateFormat = "MM-dd-yyyy HH:mm"
+        }
+        
+        return dateformatter.string(from: date)
     }
 
 }

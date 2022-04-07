@@ -44,12 +44,15 @@ class NoteViewController: UIViewController {
 // MARK:- UITextView Delegate
 
 extension NoteViewController: UITextViewDelegate {
+    
     func textViewDidEndEditing(_ textView: UITextView) {
-        note?.text = textView.text
-        if note?.text?.isEmpty ?? true {
-            deleteNote()
-        } else {
-            updateNote()
+        if (note?.text != textView.text) || textView.text.isEmpty {
+            note?.text = textView.text
+            if note?.text?.isEmpty ?? true {
+                deleteNote()
+            } else {
+                updateNote()
+            }
         }
     }
 }

@@ -35,7 +35,6 @@ class CoreDataManager {
             } catch {
                 print ("An error ocurred while saving data: \(error.localizedDescription)")
             }
-            
         }
     }
 }

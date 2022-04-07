@@ -28,7 +28,9 @@ class NoteTableViewCell: UITableViewCell {
     func configureCell() {
         
         descriptionLabel.text = note.text
-        dateLabel.text = getFormattedDate(date: note.date)
+        if let lastUpdated = note.lastUpdated {
+            dateLabel.text = getFormattedDate(date: lastUpdated)
+        }
         
         noteView.layer.cornerRadius = 8.0
         noteView.layer.masksToBounds = true

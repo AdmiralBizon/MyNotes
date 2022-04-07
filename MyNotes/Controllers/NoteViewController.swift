@@ -16,7 +16,6 @@ class NoteViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         textView.text = note?.text
     }
     
@@ -28,7 +27,7 @@ class NoteViewController: UIViewController {
         self.view.endEditing(true)
     }
 
-    // MARK:- Operations with notes
+    // MARK:- Data manipulation methods
     
     private func updateNote() {
         note.lastUpdated = Date()
@@ -37,10 +36,8 @@ class NoteViewController: UIViewController {
     }
     
     private func deleteNote() {
-        if let noteId = note.id {
-            CoreDataManager.shared.deleteNote(note)
-            notesUpdateDelegate?.deleteNote(with: noteId)
-        }
+        CoreDataManager.shared.deleteNote(note)
+        notesUpdateDelegate?.deleteNote()
     }
 }
 

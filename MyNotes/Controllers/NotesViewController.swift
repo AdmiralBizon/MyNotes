@@ -9,7 +9,7 @@ import UIKit
 
 protocol NotesUpdateDelegate: AnyObject {
     func refreshNotes()
-    func deleteNote(with id: UUID)
+    func deleteNote()
 }
 
 class NotesViewController: UITableViewController {
@@ -22,12 +22,23 @@ class NotesViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSearchBar()
-        fetchNotesFromStorage()
+        fetchNotes()
     }
     
     @IBAction func createNotePressed(_ sender: UIBarButtonItem) {
         selectedNoteIndex = 0
         goToEditNote(createNote())
+    }
+    
+    // MARK: - Data manipulation methods
+    
+    private func fetchNotes() {
+        notes = CoreDataManager.shared.fetchNotes()
+    }
+    
+    private func searchNotes(by text: String) {
+        notes = CoreDataManager.shared.searchNotes(by: text)
+        tableView.reloadData()
     }
     
     private func createNote() -> Note {
@@ -40,23 +51,18 @@ class NotesViewController: UITableViewController {
         return note
     }
     
-    private func fetchNotesFromStorage() {
-        notes = CoreDataManager.shared.fetchNotes()
-    }
-    
-    private func deleteNoteFromStorage(_ note: Note) {
-        if let noteId = note.id {
-            CoreDataManager.shared.deleteNote(note)
-            // Update table
-            deleteNote(with: noteId)
-        }
-    }
-    
     private func goToEditNote(_ note: Note) {
         let controller = storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteViewController
         controller.note = note
         controller.notesUpdateDelegate = self
         navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    private func deleteNoteFromStorage(_ note: Note) {
+        CoreDataManager.shared.deleteNote(note)
+        
+        // Update table
+        deleteNote()
     }
     
     // MARK: - UITableViewDataSource
@@ -100,21 +106,6 @@ class NotesViewController: UITableViewController {
     }
 }
 
-// MARK: - NotesUpdateDelegate
-
-extension NotesViewController: NotesUpdateDelegate {
-    func refreshNotes() {
-        fetchNotesFromStorage()
-        tableView.reloadData()
-    }
-    
-    func deleteNote(with id: UUID) {
-        notes.remove(at: selectedNoteIndex)
-        tableView.deleteRows(at: [IndexPath(row: selectedNoteIndex, section: 0)], with: .automatic)
-    }
-    
-}
-
 // MARK: - UISearchControllerDelegate, UISearchBarDeledate
 
 extension NotesViewController: UISearchControllerDelegate, UISearchBarDelegate {
@@ -127,11 +118,39 @@ extension NotesViewController: UISearchControllerDelegate, UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print(1)
-        
+        if searchBar.text?.count != 0 {
+            searchNotes(by: searchBar.text!)
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        if searchBar.text?.count != 0 {
+            refreshNotes()
+        }
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        print(2)
+        if searchBar.text?.count == 0 {
+            refreshNotes()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
     }
+}
+
+// MARK: - NotesUpdateDelegate
+
+extension NotesViewController: NotesUpdateDelegate {
+    func refreshNotes() {
+        fetchNotes()
+        tableView.reloadData()
+    }
+    
+    func deleteNote() {
+        notes.remove(at: selectedNoteIndex)
+        tableView.deleteRows(at: [IndexPath(row: selectedNoteIndex, section: 0)], with: .automatic)
+    }
+    
 }

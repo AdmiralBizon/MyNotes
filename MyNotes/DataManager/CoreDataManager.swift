@@ -42,8 +42,13 @@ class CoreDataManager {
 
 extension CoreDataManager {
     
-    func fetchNotes() -> [Note] {
+    func fetchNotes(predicate: NSPredicate? = nil) -> [Note] {
         let request: NSFetchRequest<Note> = Note.fetchRequest()
+        
+        if let searchPredicate = predicate {
+            request.predicate = searchPredicate
+        }
+        
         let sortDescriptor = NSSortDescriptor(keyPath: \Note.lastUpdated,
                                               ascending: false)
         request.sortDescriptors = [sortDescriptor]
@@ -69,6 +74,11 @@ extension CoreDataManager {
     func deleteNote(_ note: Note) {
         viewContext.delete(note)
         save()
+    }
+    
+    func searchNotes(by text: String) -> [Note] {
+        let searchPredicate = NSPredicate(format: "text contains[cd] %@", text)
+        return fetchNotes(predicate: searchPredicate)
     }
     
 }
